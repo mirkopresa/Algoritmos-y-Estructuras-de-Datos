@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 func BuscarElem(arr []int, elem int) int {
+	// Otra manera de hacerlo
 	// for index, value := range arr {
 	// 	if elem == value {
 	//		return index
