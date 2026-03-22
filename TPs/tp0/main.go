@@ -33,8 +33,8 @@ func cargarArreglo(ruta string) []int {
 }
 
 func imprimirArreglo(vector []int) {
-	for i := 0; i < len(vector); i++ {
-		fmt.Println(vector[i])
+	for _, value := range vector {
+		fmt.Println(value)
 	}
 }
 
