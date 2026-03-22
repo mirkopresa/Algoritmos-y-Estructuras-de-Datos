@@ -1,11 +1,12 @@
-// Implementar un algoritmo que tome 2 arreglos ordenados y devuelva un nuevo arreglo con los elementos de ambos arreglos, también ordenado.
+// Implementar un algoritmo que tome 2 arreglos ordenados y
+// devuelva un nuevo arreglo con los elementos de ambos arreglos, también ordenado.
 
 package main
 
 import "fmt"
 
 func Merge(arr1, arr2 []int) []int {
-	arr3 := []int{} // no es lo correcto, por el momento queda asi
+	arr3 := make([]int, 0)
 	i, j := 0, 0
 	for i < len(arr1) && j < len(arr2) {
 		if arr1[i] >= arr2[j] {

@@ -1,4 +1,8 @@
+// Implementar el TDA NumeroComplejo.
+
 package main
+
+import "math"
 
 type Complejo struct {
 	real       float64
@@ -31,20 +35,20 @@ func (comp *Complejo) Sumar(otro Complejo) {
 
 // ParteReal Obtiene la parte real de un numero complejo
 func (comp Complejo) ParteReal() float64 {
-	// ?
+	return comp.real
 }
 
 // ParteImaginaria Obtiene la parte imaginaria de un numero complejo
 func (comp Complejo) ParteImaginaria() float64 {
-	// ?
+	return comp.imaginario
 }
 
 // Modulo Obtiene el modulo de un numero complejo
 func (comp Complejo) Modulo() float64 {
-	// ?
+	return math.Hypot(comp.real, comp.imaginario)
 }
 
 // Angulo Obtiene el angulo de un numero complejo
 func (comp Complejo) Angulo() float64 {
-	// ?
+	return math.Atan2(comp.imaginario, comp.real)
 }

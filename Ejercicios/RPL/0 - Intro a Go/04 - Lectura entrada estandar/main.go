@@ -1,3 +1,6 @@
+// Implementar un programa que lea la entrada del usuario (es decir, entrada estándar)
+// hasta que se ingrese una 's', e imprima la cantidad de líneas leídas.
+
 package main
 
 import (

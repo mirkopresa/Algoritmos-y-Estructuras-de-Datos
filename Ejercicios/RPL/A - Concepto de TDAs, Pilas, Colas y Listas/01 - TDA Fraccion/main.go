@@ -1,3 +1,5 @@
+// Implementar el TDA Fracción.
+
 package main
 
 import "fmt"

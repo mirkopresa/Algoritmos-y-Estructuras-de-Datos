@@ -1,3 +1,6 @@
+// Implementar una función que lea un archivo pasado por parámetro y
+// cuenten la cantidad de caracteres alfanuméricos dentro del mismo (es decir, letras y números).
+
 package main
 
 import (
