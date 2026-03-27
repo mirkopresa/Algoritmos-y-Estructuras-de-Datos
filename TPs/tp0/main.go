@@ -38,12 +38,16 @@ func imprimirArreglo(vector []int) {
 	}
 }
 
-func main() {
-	slice1, slice2 := cargarArreglo(_RUTA1), cargarArreglo(_RUTA2)
+func imprimirSliceMayor(slice1, slice2 []int) {
 	sliceMayor := slice1
 	if ejercicios.Comparar(slice1, slice2) == -1 { // El segundo arreglo es mas grande que el primero
 		sliceMayor = slice2
 	}
 	ejercicios.Seleccion(sliceMayor)
 	imprimirArreglo(sliceMayor)
+}
+
+func main() {
+	slice1, slice2 := cargarArreglo(_RUTA1), cargarArreglo(_RUTA2)
+	imprimirSliceMayor(slice1, slice2)
 }
