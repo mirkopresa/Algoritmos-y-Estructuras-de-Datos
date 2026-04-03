@@ -7,20 +7,17 @@ package main
 
 func EsPiramidal(pila Pila[int]) bool {
 	piramidal := true
-	arr := make([]int, 0)
-	i := 0
+	pilaAuxiliar := CrearPilaDinamica[int]()
 	for !pila.EstaVacia() {
-		arr[i] = pila.Desapilar()
-		i++
-	}
-	for i := 0; i < len(arr)-1; i++ {
-		if arr[i] < arr[i+1] {
+		desapilado := pila.Desapilar()
+		pilaAuxiliar.Apilar(desapilado)
+		if !pila.Estavacia() && (pila.VerTope() < desapilado) {
 			piramidal = false
 			break
 		}
 	}
-	for _, valor := range arr {
-		pila.Apilar(valor)
+	for !pilaAuxiliar.EstaVacia() {
+		pila.Apilar(pilaAuxiliar.Desapilar())
 	}
 	return piramidal
 }
