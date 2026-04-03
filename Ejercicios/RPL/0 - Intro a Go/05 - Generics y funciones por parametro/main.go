@@ -5,5 +5,11 @@
 package main
 
 func Maximo[T any](arr []T, comparacion func(T, T) int) T {
-	return arr[0]
+	max := arr[0]
+	for _, value := range arr[1:] {
+		if comparacion(max, value) < 0 {
+			max = value
+		}
+	}
+	return max
 }
