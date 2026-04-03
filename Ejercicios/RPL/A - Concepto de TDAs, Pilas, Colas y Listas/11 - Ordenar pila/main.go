@@ -6,19 +6,18 @@
 
 package main
 
+// O(n²)
+
 func Ordenar(pila Pila[int]) {
 	pilaAuxiliar := CrearPilaDinamica[int]()
 	for !pila.EstaVacia() {
 		desapilado := pila.Desapilar()
-		if !pilaAuxiliar.EstaVacia() && pilaAuxiliar.VerTope() > pila.VerTope() {
-			pilaAuxiliar.Apilar(desapilado)
-		} else if !pilaAuxiliar.EstaVacia() && pila.VerTope() > pilaAuxiliar.VerTope() {
-			for !pilaAuxiliar.EstaVacia() {
-				pila.Apilar(pilaAuxiliar.Desapilar())
-			}
-			pilaAuxiliar.Apilar(desapilado)
-		} else {
-			pilaAuxiliar.Apilar(desapilado)
+		for !pilaAuxiliar.EstaVacia() && pilaAuxiliar.VerTope() < desapilado {
+			pila.Apilar(pilaAuxiliar.Desapilar())
 		}
+		pilaAuxiliar.Apilar(desapilado)
+	}
+	for !pilaAuxiliar.EstaVacia() {
+		pila.Apilar(pilaAuxiliar.Desapilar())
 	}
 }
