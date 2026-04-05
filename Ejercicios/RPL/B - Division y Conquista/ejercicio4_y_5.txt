@@ -1,0 +1,75 @@
+Hacerle el seguimiento al siguiente algoritmo:
+
+func imprimirDyC(m int) {
+    if m < 4 {
+        return
+    }
+    fmt.Println(m)
+    imprimirDyC(m / 4)
+    imprimirDyC(m - (m / 4))
+}
+
+
+Primera iteracion con M = 16
+
+func imprimirDyC(m int) {
+    if m < 4 { (16 no es menor a 4)
+        return
+    }
+    fmt.Println(m) (Printea 16)
+    imprimirDyC(m / 4) (Manda M = 4 a la proxima iteracion)
+    imprimirDyC(m - (m / 4)) (Manda M = 12 a la proxima iteracion)
+}
+
+Iteracion con M = 4
+
+func imprimirDyC(m int) {
+    if m < 4 {  (4 no es menor a 4 entonces no retorna)
+        return
+    }
+    fmt.Println(m) (Printea 4)
+    imprimirDyC(m / 4) (Manda 1 a la proxima iteracion, y terminan por el primer if)
+    imprimirDyC(m - (m / 4)) (Manda 3 a la proxima iteracion, y terminan por el primer if)
+}
+
+Iteracion con M = 12
+
+func imprimirDyC(m int) {
+    if m < 4 {  (12 no es menor a 4)
+        return
+    }
+    fmt.Println(m) (Printea 12)
+    imprimirDyC(m / 4) (Envia 3 a la proxima iteracion, y termina por el primer if)
+    imprimirDyC(m - (m / 4)) (Envia 9 a la proxima iteracion)
+}
+
+Iteracion con M = 9
+
+func imprimirDyC(m int) {
+    if m < 4 { (9 no es menor a 4)
+        return
+    }
+    fmt.Println(m) (Printea 9)
+    imprimirDyC(m / 4) (Envia 2 a la proxima iteracion, y termina por el primer if)
+    imprimirDyC(m - (m / 4)) (Envia 7 a la proxima iteracion)
+}
+
+Iteracion con M = 7 
+
+func imprimirDyC(m int) {
+    if m < 4 { (7 no es menor a 4)
+        return
+    }
+    fmt.Println(m) (Printea 7)
+    imprimirDyC(m / 4) (Envia 1 a la proxima iteracion, y termina por el primer if)
+    imprimirDyC(m - (m / 4)) (Envia 6 a la proxima iteracion)
+}
+... etc
+
+
+Indicar, utilizando el Teorema Maestro, la complejidad del ejercicio anterior.
+
+No se puede xd, los llamados recursivos dividen el problema en cantidades diferentes
+
+
+

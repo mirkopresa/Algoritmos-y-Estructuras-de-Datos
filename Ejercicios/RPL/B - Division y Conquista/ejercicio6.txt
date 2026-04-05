@@ -1,0 +1,7 @@
+Indicar cuál es la complejidad de un algoritmo 
+cuya ecuación de recurrencia es: T = 2T ((2/3)n) + O(n^1/2)
+A = 2, B = 3/2 y C = 1/2
+
+log en base 3/2 de 2 es = mayor a C (1.70... > 1/2) entonces 
+
+la complejidad es O(n^(log en base B de A)) -> O(n^(log en base 3/2 de 2))

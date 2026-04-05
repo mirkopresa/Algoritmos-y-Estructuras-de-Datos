@@ -1,0 +1,17 @@
+Explicar por qué el siguiente siguiente código no es de división y conquista.
+
+// Algoritmo ¿por D&C? para obtener el máximo de un arreglo
+func maximo(arreglo []int) int {
+    if len(arreglo) == 1 {
+        return arreglo[0]
+    }
+    max_restante := maximo(arreglo[0:len(arreglo)-1])
+    if arreglo[len(arreglo) - 1] > max_restante {
+        return arreglo[len(arreglo) - 1]
+    } else {
+        return max_restante
+    }
+}
+
+Respuesta: El algoritmo no es de division y conquista porque simplemente estamos reduciendo en 1 el arreglo y volviendolo a enviar,
+nunca estamos partiendo en partes

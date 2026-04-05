@@ -1,0 +1,26 @@
+Explicar por qué el siguiente siguiente código no es de división y conquista.
+
+// Algoritmo ¿por D&C? para obtener el máximo de un arreglo
+func maximo(arreglo []int) int {
+    medio = len(arreglo) / 2
+    max_izquierda := _maximo(arreglo, 0, medio)
+    max_derecha := _maximo(arreglo, medio + 1, len(arreglo) - 1)
+    if max_izquierda > max_derecha {
+        return max_izquierda
+    } else {
+        return max_derecha
+    }
+}
+    
+func _maximo(arreglo []int, inicio int, fin int) int {
+    max := arreglo[inicio]
+    for i := inicio + 1; i <= fin; i++ {
+        if max < arreglo[i] {
+            max = arreglo[i]
+        }
+    }
+    return max
+}
+
+Respuesta: No es un algoritmo recursivo, estamos llamando 2 veces a la misma funcion enviandole a una la primera mitad,
+y a la otra la segunda y calculando el maximo con un for y despues comparando

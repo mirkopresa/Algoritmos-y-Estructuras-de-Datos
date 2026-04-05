@@ -1,0 +1,28 @@
+Nos dan para elegir entre los siguientes 3 algoritmos para solucionar el mismo problema. 
+¿Cuál elegirías? Justificar calculando el orden de los algoritmos.
+
+(1) El algoritmo A resuelve el problema dividiéndolo en 5 subproblemas de la mitad del tamaño, 
+resolviendo cada subproblema de forma recursiva, y combinando las soluciones en tiempo lineal.
+
+(2) El algoritmo B resuelve el problema (de tamaño n) dividiéndolo en 9 subproblemas de tamaño n/3​, 
+resolviendo cada subproblema de forma recursiva y combinando las soluciones en tiempo cuadrático de n.
+
+(3) El algoritmo C resuelve el problema (de tamaño n) eligiendo un subproblema de tamaño n−1 en tiempo O(n), 
+y luego resolviendo recursivamente ese subproblema.
+
+(1) A = 5, B = 2, C = 1
+
+log en base 2 de 5 = 2.32... > 1 -> O(n^(log en base 2 de 5))
+
+(2) A = 9, B = 3, C = 2
+
+log en base 3 de 9 = 2 == 2 (C) -> O(n²log(n))
+
+(3) No es un algoritmo de division y conquista, entonces no se puede calcular la complejidad con el Teorema Maestro
+T(n) = T(n-1) + O(n)
+T(n-1) = T(n-2) + O(n)
+T(n-2) = T(n-3) + O(n)
+Termina siendo una sumatoria hasta n, 1 + 2 + 3 + ... + n-3 + n-2 + n-1 + n
+= n(n+1)/2 = n²
+
+El mejor algoritmo es el tercero
