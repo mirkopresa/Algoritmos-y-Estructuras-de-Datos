@@ -1,0 +1,7 @@
+Para ordenar el arreglo por año, podemos usar cualquier ordenamiento O(n log n) como Merge Sort, Quick Sort
+lo mismo por evento
+
+En el caso de ordenar por año y dentro de cada año por evento, primero tenemos que ordenar por evento de manera alfabetica
+con cualquier de los ordenamientos mencionados arriba
+Pero luego, debemos ordenar de nuevo por año, con un algoritmo estable como Merge Sort, sino no quedaria
+ordenado de la misma manera que quedo en el primer ordenamiento

@@ -1,0 +1,2 @@
+Un ordenamiento comparativo, mas especificamente merge sort, quick sort, o heap sort, ya que
+no tenemos ninguna informacion extra como para usar un ordenamiento no comparativo
