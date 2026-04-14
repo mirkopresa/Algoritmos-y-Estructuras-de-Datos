@@ -9,81 +9,123 @@ import (
 	"unicode"
 )
 
-// Funcion que sirve para devolver la procedencia de un operador
-func Procedencia(operador string) int {
+type TipoCaracter int
+
+const (
+	Numero TipoCaracter = iota
+	Operador
+	ParentesisIzq
+	ParentesisDer
+)
+
+type Caracter struct {
+	tipo  TipoCaracter
+	valor string
+}
+
+func EsNumero(caracter rune) bool {
+	return unicode.IsDigit(caracter)
+}
+
+func EsEspacio(caracter rune) bool {
+	return unicode.IsSpace(caracter)
+}
+
+func EsOperadorOParentesis(caracter rune) TipoCaracter {
+	switch caracter {
+	case '(':
+		return ParentesisIzq
+	case ')':
+		return ParentesisDer
+	default:
+		return Operador
+	}
+}
+
+// Funcion que devuelve la precedencia de un operador
+func Precedencia(operador string) int {
 	switch operador {
 	case "+", "-":
 		return 1
 	case "*", "/":
 		return 2
-	case "^":
-		return 3
-	case "(", ")":
-		return 4
+	default:
+		return 3 // Para el operador ^
 	}
-	return 0 // Es un numero
 }
 
-// Funcion que devuelve la asociatividad de un operador, true para izquierda y false para derecha
-func Asociatividad(operador string) bool {
-	if operador == "^" {
-		return false
-	}
-	return true
-}
-
-func numeroNoVacio(numero *strings.Builder, vectorInfix []string) []string {
+func CargarNumero(numero *strings.Builder, vectorInfix []Caracter) []Caracter {
 	if numero.Len() > 0 {
-		vectorInfix = append(vectorInfix, numero.String())
+		numeroAGuardar := Caracter{tipo: Numero, valor: numero.String()}
+		vectorInfix = append(vectorInfix, numeroAGuardar)
 		numero.Reset()
-		return vectorInfix
 	}
 	return vectorInfix
 }
 
 // Funcion que convierte una linea de texto en un array de strings,
 // donde cada string es un numero o un operador
-func TextoAVector(linea string) []string {
-	vectorInfix := make([]string, 0)
+func TextoAVector(linea string) []Caracter {
+	vectorInfix := make([]Caracter, 0)
 	numero := strings.Builder{}
 	for _, caracter := range linea {
-		switch {
-		case unicode.IsDigit(caracter): // Es un numero
+		if EsEspacio(caracter) {
+			continue
+		} else if EsNumero(caracter) {
 			numero.WriteRune(caracter)
-		case Procedencia(string(caracter)) >= 1 && Procedencia(string(caracter)) <= 4: // Es un operador
-			vectorInfix = numeroNoVacio(&numero, vectorInfix)
-			vectorInfix = append(vectorInfix, string(caracter))
+		} else { // Es un operador o un parentesis
+			vectorInfix = CargarNumero(&numero, vectorInfix)
+			caracterTipo := EsOperadorOParentesis(caracter)
+			caracterAGuardar := Caracter{tipo: caracterTipo, valor: string(caracter)}
+			vectorInfix = append(vectorInfix, caracterAGuardar)
 		}
 	}
-	vectorInfix = numeroNoVacio(&numero, vectorInfix)
+	vectorInfix = CargarNumero(&numero, vectorInfix)
 	return vectorInfix
 }
 
-func ConvertirInfixToPostfix(vectorInfix []string) []string {
-	pila := TDAPila.CrearPilaDinamica[string]()
-	vectorPostfix := make([]string, 0)
+// Funcion que devuelve la asociatividad de un operador, true para izquierda y false para derecha
+func EsAsociativoPorIzquierda(operador string) bool {
+	if operador == "^" {
+		return false
+	}
+	return true
+}
+
+func ReacomodarOperadores(vectorPostfix []Caracter, operador Caracter, pila TDAPila.Pila[Caracter]) []Caracter {
+	for !pila.EstaVacia() && pila.VerTope().tipo == Operador {
+		operadorTopePrecedencia := Precedencia(pila.VerTope().valor)
+		operadorNuevoPrecedencia := Precedencia(operador.valor)
+		if operadorTopePrecedencia > operadorNuevoPrecedencia || (operadorTopePrecedencia == operadorNuevoPrecedencia && EsAsociativoPorIzquierda(operador.valor)) {
+			vectorPostfix = append(vectorPostfix, pila.Desapilar())
+		} else {
+			break
+		}
+	}
+	pila.Apilar(operador)
+	return vectorPostfix
+}
+
+func DesapilarYGuardarHastaParentesisIzq(vectorPostfix []Caracter, pila TDAPila.Pila[Caracter]) []Caracter {
+	for !pila.EstaVacia() && pila.VerTope().tipo != ParentesisIzq {
+		vectorPostfix = append(vectorPostfix, pila.Desapilar())
+	}
+	pila.Desapilar()
+	return vectorPostfix
+}
+func ConvertirInfixToPostfix(vectorInfix []Caracter) []Caracter {
+	pila := TDAPila.CrearPilaDinamica[Caracter]()
+	vectorPostfix := make([]Caracter, 0)
 	for _, caracter := range vectorInfix {
-		switch {
-		case unicode.IsDigit(rune(caracter[0])): // Es un numero
+		switch caracter.tipo {
+		case Numero:
 			vectorPostfix = append(vectorPostfix, caracter)
-		case caracter == "(":
+		case ParentesisIzq:
 			pila.Apilar(caracter)
-		case caracter == ")":
-			for !pila.EstaVacia() && pila.VerTope() != "(" {
-				vectorPostfix = append(vectorPostfix, pila.Desapilar())
-			}
-			pila.Desapilar()
+		case ParentesisDer:
+			vectorPostfix = DesapilarYGuardarHastaParentesisIzq(vectorPostfix, pila)
 		default: // Es un operador
-			for !pila.EstaVacia() && pila.VerTope() != "(" {
-				operador := Procedencia(caracter)
-				operadorTope := Procedencia(pila.VerTope())
-				if operadorTope > operador || (operadorTope == operador && Asociatividad(caracter)) {
-					vectorPostfix = append(vectorPostfix, pila.Desapilar())
-				} else {
-					break
-				}
-			}
-			pila.Apilar(caracter)
+			vectorPostfix = ReacomodarOperadores(vectorPostfix, caracter, pila)
 		}
 	}
 	for !pila.EstaVacia() {
@@ -93,8 +135,12 @@ func ConvertirInfixToPostfix(vectorInfix []string) []string {
 }
 
 // Funcion que imprime el vectorPostfix por Stdout
-func ImprimirResultado(vectorPostfix []string) {
-	lineaPostfix := strings.Join(vectorPostfix, " ")
+func ImprimirResultado(vectorPostfix []Caracter) {
+	valores := make([]string, 0)
+	for _, caracter := range vectorPostfix {
+		valores = append(valores, caracter.valor)
+	}
+	lineaPostfix := strings.Join(valores, " ")
 	fmt.Fprintf(os.Stdout, "%s\n", lineaPostfix)
 }
 
