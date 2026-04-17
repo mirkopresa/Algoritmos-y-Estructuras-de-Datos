@@ -30,6 +30,7 @@ func ObtenerTercerDigito(numero string) int {
 
 // Complejidad O(d * (n + k)) siendo d la cantidad de ordenamientos,
 // n la cantidad de elementos a ordenar y k el rango de los dígitos (en este caso 10)
+// d = 3, k = 10, entonces la complejidad es O(n)
 func CountingSort(arr []string, rango int, f func(string) int) []string {
 	frecuencias := make([]int, rango)
 	for _, num := range arr {
