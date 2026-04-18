@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -18,40 +17,48 @@ const (
 	ParentesisDer
 )
 
+const (
+	_SUMA           = "+"
+	_RESTA          = "-"
+	_MULTIPLICACION = "*"
+	_DIVISION       = "/"
+	_POTENCIA       = "^"
+)
+
 type Caracter struct {
 	tipo  TipoCaracter
 	valor string
 }
 
 // Funciones auxiliares para identificar el tipo de caracter
-func EsNumero(caracter rune) bool {
+func esNumero(caracter rune) bool {
 	return unicode.IsDigit(caracter)
 }
 
-func EsEspacio(caracter rune) bool {
+func esEspacio(caracter rune) bool {
 	return unicode.IsSpace(caracter)
 }
 
-func EsOperador(caracter rune) bool {
-	return Precedencia(string(caracter)) > 0
+func esOperador(caracter rune) bool {
+	return precedencia(string(caracter)) > 0
 }
 
-func EsParentesisIzq(caracter rune) bool {
+func esParentesisIzq(caracter rune) bool {
 	return caracter == '('
 }
 
-func EsParentesisDer(caracter rune) bool {
+func esParentesisDer(caracter rune) bool {
 	return caracter == ')'
 }
 
 // Funcion que devuelve la precedencia de un operador
-func Precedencia(operador string) int {
+func precedencia(operador string) int {
 	switch operador {
-	case "+", "-":
+	case _SUMA, _RESTA:
 		return 1
-	case "*", "/":
+	case _MULTIPLICACION, _DIVISION:
 		return 2
-	case "^":
+	case _POTENCIA:
 		return 3
 	default:
 		return 0
@@ -59,10 +66,10 @@ func Precedencia(operador string) int {
 }
 
 // Funcion que obtiene un numero completo en caso de que haya mas de un digito
-func ObtenerNumero(inicio int, linea string) (string, int) {
+func obtenerNumero(inicio int, linea string) (string, int) {
 	numero := ""
 	fin := inicio
-	for fin+1 < len(linea) && EsNumero(rune(linea[fin+1])) {
+	for fin+1 < len(linea) && esNumero(rune(linea[fin+1])) {
 		fin++
 	}
 	numero = linea[inicio : fin+1]
@@ -76,17 +83,17 @@ func LineaAVector(linea string) []Caracter {
 		var caracterAGuardar Caracter
 		caracter := rune(linea[i])
 		switch {
-		case EsEspacio(caracter):
+		case esEspacio(caracter):
 			continue
-		case EsNumero(caracter):
+		case esNumero(caracter):
 			var numero string
-			numero, i = ObtenerNumero(i, linea)
+			numero, i = obtenerNumero(i, linea)
 			caracterAGuardar = Caracter{tipo: Numero, valor: numero}
-		case EsOperador(caracter):
+		case esOperador(caracter):
 			caracterAGuardar = Caracter{tipo: Operador, valor: string(linea[i])}
-		case EsParentesisIzq(caracter):
+		case esParentesisIzq(caracter):
 			caracterAGuardar = Caracter{tipo: ParentesisIzq, valor: string(linea[i])}
-		case EsParentesisDer(caracter):
+		case esParentesisDer(caracter):
 			caracterAGuardar = Caracter{tipo: ParentesisDer, valor: string(linea[i])}
 		default:
 			panic("Caracter no reconocido")
@@ -97,21 +104,21 @@ func LineaAVector(linea string) []Caracter {
 }
 
 // Funcion que devuelve la asociatividad de un operador, true para derecha y false para izquierda
-func EsAsociativoPorDerecha(operador string) bool {
-	if operador == "^" {
+func esAsociativoPorDerecha(operador string) bool {
+	if operador == _POTENCIA {
 		return true
 	}
 	return false
 }
 
-func DesapilarYGuardarOperadoresMayorOIgual(vectorPostfix []Caracter, operador Caracter, pila TDAPila.Pila[Caracter]) []Caracter {
+func desapilarYGuardarOperadoresMayorOIgual(vectorPostfix []Caracter, operador Caracter, pila TDAPila.Pila[Caracter]) []Caracter {
 	for !pila.EstaVacia() && pila.VerTope().tipo == Operador {
-		operadorTopePrecedencia := Precedencia(pila.VerTope().valor)
-		operadorNuevoPrecedencia := Precedencia(operador.valor)
+		operadorTopePrecedencia := precedencia(pila.VerTope().valor)
+		operadorNuevoPrecedencia := precedencia(operador.valor)
 		if operadorTopePrecedencia < operadorNuevoPrecedencia {
 			break
 		}
-		if operadorTopePrecedencia == operadorNuevoPrecedencia && EsAsociativoPorDerecha(operador.valor) {
+		if operadorTopePrecedencia == operadorNuevoPrecedencia && esAsociativoPorDerecha(operador.valor) {
 			break
 		}
 		vectorPostfix = append(vectorPostfix, pila.Desapilar())
@@ -119,7 +126,7 @@ func DesapilarYGuardarOperadoresMayorOIgual(vectorPostfix []Caracter, operador C
 	return vectorPostfix
 }
 
-func DesapilarYGuardarHastaParentesisIzq(vectorPostfix []Caracter, pila TDAPila.Pila[Caracter]) []Caracter {
+func desapilarYGuardarHastaParentesisIzq(vectorPostfix []Caracter, pila TDAPila.Pila[Caracter]) []Caracter {
 	for !pila.EstaVacia() && pila.VerTope().tipo != ParentesisIzq {
 		vectorPostfix = append(vectorPostfix, pila.Desapilar())
 	}
@@ -137,9 +144,9 @@ func ConvertirInfixToPostfix(vectorInfix []Caracter) []Caracter {
 		case ParentesisIzq:
 			pila.Apilar(caracter)
 		case ParentesisDer:
-			vectorPostfix = DesapilarYGuardarHastaParentesisIzq(vectorPostfix, pila)
+			vectorPostfix = desapilarYGuardarHastaParentesisIzq(vectorPostfix, pila)
 		case Operador:
-			vectorPostfix = DesapilarYGuardarOperadoresMayorOIgual(vectorPostfix, caracter, pila)
+			vectorPostfix = desapilarYGuardarOperadoresMayorOIgual(vectorPostfix, caracter, pila)
 			pila.Apilar(caracter)
 		default:
 			panic("Tipo de caracter no reconocido")
@@ -158,14 +165,4 @@ func ImprimirResultado(vectorPostfix []Caracter) {
 	}
 	lineaPostfix := strings.Join(valores, " ")
 	fmt.Fprintf(os.Stdout, "%s\n", lineaPostfix)
-}
-
-func main() {
-	lector := bufio.NewScanner(os.Stdin)
-	for lector.Scan() {
-		linea := lector.Text()
-		vectorInfix := LineaAVector(linea)
-		vectorPostfix := ConvertirInfixToPostfix(vectorInfix)
-		ImprimirResultado(vectorPostfix)
-	}
 }
