@@ -23,6 +23,8 @@ const (
 	_MULTIPLICACION = "*"
 	_DIVISION       = "/"
 	_POTENCIA       = "^"
+	_PARENTESIS_IZQ = '('
+	_PARENTESIS_DER = ')'
 )
 
 type Caracter struct {
@@ -44,11 +46,11 @@ func esOperador(caracter rune) bool {
 }
 
 func esParentesisIzq(caracter rune) bool {
-	return caracter == '('
+	return caracter == _PARENTESIS_IZQ
 }
 
 func esParentesisDer(caracter rune) bool {
-	return caracter == ')'
+	return caracter == _PARENTESIS_DER
 }
 
 // Funcion que devuelve la precedencia de un operador
