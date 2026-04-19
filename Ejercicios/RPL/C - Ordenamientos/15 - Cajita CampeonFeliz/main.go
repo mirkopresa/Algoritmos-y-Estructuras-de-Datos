@@ -67,6 +67,8 @@ type Persona struct {
 }
 
 // Primero ordenamos por no niños, y luego por nacionalidad, por ultimo por niños
+// Complejidad O(d * (n)) siendo d la cantidad de ordenamientos, n la cantidad de personas
+// Ordenamos 3 veces, entonces la complejidad es O(n)
 func CountingSort[T any](arr []T, rango int, f func(T) int) []T {
 	frecuencias := make([]int, rango)
 	for _, num := range arr {
