@@ -4,6 +4,7 @@
 
 package main
 
+// A = 2, B = 2, C = 0; log en base 2 de 2 = 1 > C, O(n^(log base 2 de 2)) -> O(n)
 func EstaOrdenadoRecursivo(arr []int, inicio int, fin int) bool {
 	if inicio >= fin {
 		return true
