@@ -17,25 +17,27 @@
 
 package main
 
-[ - - - _ - -]
-
+// A = 1, B = 2, C = ??? no se la complejidad de balanza
+// en el caso que balanza sea O(n), A = 1, B = 2, C = 1, log en base 2 de 1 = 0 < C -> O(n^c) -> O(n)
+// en el caso que balanza sea O(1), A = 1, B = 2, C = 0, log en base 2 de 1 = 0 = C -> O(n^c*log(n)) -> O(log(n))
 func encontrarJoyaRecursivo(arr []int, inicio, fin int) int {
-	if fin - inicio == 1 {
-		return 1
+	if fin-inicio == 1 {
+		return inicio
 	}
 	mitad := (inicio + fin) / 2
 	var resultado, mitadDer int
 	// Caso par, no excluimos a la mitad, caso impar, excluimos a la mitad a la hora de pesar
-	if (fin - inicio) % 2 == 0 {
+	if (fin-inicio)%2 == 0 {
 		resultado = balanza(arr[inicio:mitad], arr[mitad:fin])
 		mitadDer = mitad
 	} else {
 		resultado = balanza(arr[inicio:mitad], arr[mitad+1:fin])
+		if resultado == 0 {
+			return mitad
+		}
 		mitadDer = mitad + 1
 	}
-	if resultado == 0 {
-		return mitad
-	} else if resultado == 1 {
+	if resultado == 1 {
 		return encontrarJoyaRecursivo(arr, inicio, mitad)
 	} else {
 		return encontrarJoyaRecursivo(arr, mitadDer, fin)
