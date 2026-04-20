@@ -1,0 +1,13 @@
+Indicar Verdadero o Falso, justificando de forma concisa en cualquier caso.
+    a. Se puede mejorar la complejidad de MergeSort si se cuenta con información extra
+    b. Que un algoritmo de ordenamiento sea in-place implica que ordena respetando el orden original en el que
+    aparecen los elementos de mismo valor.
+    c. La complejidad de RadixSort depende únicamente del valor de d (cantidad de componentes) y de k (rango
+    de cada componente)
+
+a. Falso, no existe mejor complejidad que O(n log(n)) para un ordenamiento comparativo, y MergeSort es estrictamente
+comparativo, siempre divide y hace comparaciones del estilo A < B y determina un resultado
+b. Falso, para eso un algoritmo de ordenamiento deberia ser estable. A la vez, un ordenamiento in-place es
+un tipo de ordenamiento que ordena sin utilizar memoria extra, sobre el arreglo original
+c. Falso, La complejidad de RadixSort depende del valor d (cantidad de veces que vamos a ordenar, componentes) y
+de la complejidad del ordenamiento auxiliar que utilicemos cada vez que vayamos a ordenar.
