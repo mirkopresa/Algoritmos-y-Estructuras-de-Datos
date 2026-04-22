@@ -9,6 +9,7 @@
 
 package main
 
+// Complejidad O(n)
 func cantBorradosBalanceada(cadena string) int {
 	pila := CrearPilaDinamica[rune]()
 	contador := 0
