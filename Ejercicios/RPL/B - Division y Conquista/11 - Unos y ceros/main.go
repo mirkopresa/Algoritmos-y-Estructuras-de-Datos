@@ -13,9 +13,6 @@ func PrimerCeroRecursivo(arr []int, inicio, fin int) int {
 		return inicio
 	}
 	mitad := (inicio + fin) / 2
-	if arr[mitad] > arr[mitad+1] {
-		return mitad + 1
-	}
 	if arr[mitad] == 1 {
 		return PrimerCeroRecursivo(arr, mitad+1, fin)
 	} else {
