@@ -19,15 +19,16 @@ func (arbol *ab) Quiebres() int {
 	if arbol == nil {
 		return 0
 	}
+	quiebres := 0
 	if arbol.der != nil {
 		if arbol.der.der == nil && arbol.der.izq != nil {
-			return
+			quiebres++
 		}
 	}
 	if arbol.izq != nil {
 		if arbol.izq.izq == nil && arbol.izq.der != nil {
-			return
+			quiebres++
 		}
 	}
-	return 0
+	return arbol.izq.Quiebres() + arbol.der.Quiebres() + quiebres
 }
