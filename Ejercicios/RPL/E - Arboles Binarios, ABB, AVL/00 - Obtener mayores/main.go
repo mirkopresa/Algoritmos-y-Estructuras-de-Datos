@@ -8,15 +8,20 @@ package main
 
 func (abb *abb[K, V]) Mayores(clave K) Lista[K] {
 	resultado := CrearListaEnlazada[K]()
-	abb.raiz._Mayores(resultado, clave)
+	abb.raiz._Mayores(resultado, clave, abb.cmp)
 	return resultado
 }
 
-func (nodo *nodoAbb[K, V]) _Mayores(lista listaEnlazada[K], clave K) {
+func (nodo *nodoAbb[K, V]) _Mayores(lista Lista[K], clave K, cmp funcCmp[K]) {
 	if nodo == nil {
 		return
 	}
-	nodo.izq._Mayores(lista, clave)
-	lista.InsertarUltimo(nodo.dato)
-	nodo.der._Mayores(lista, clave)
+	comparacion := cmp(clave, nodo.clave)
+	if comparacion < 0 {
+		nodo.izquierdo._Mayores(lista, clave)
+		lista.InsertarUltimo(nodo.dato)
+		nodo.derecho._Mayores(lista, clave)
+	} else {
+		nodo.derecho._Mayores(lista, clave)
+	}
 }
