@@ -17,7 +17,7 @@ def grados_entrada(grafo):
     for v in grafo:
         for w in grafo.adyacentes(v):
             grados[w] += 1
-    return grados
+    return grados 
 
 
 def obtener_orden(grafo):
