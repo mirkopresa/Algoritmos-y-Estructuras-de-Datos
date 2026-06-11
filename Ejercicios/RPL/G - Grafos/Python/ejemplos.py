@@ -38,3 +38,19 @@ def dfs(grafo, origen):
     visitados.add(origen)
     _dfs(grafo, origen, visitados, padres, orden)
     return padres, orden
+
+def mst_prim(grafo, origen):
+    q = Heap()
+    visitados = set()
+    visitados.add(origen)
+    for w in grafo.adyacentes(origen):
+        q.encolar((origen, w, grafo.peso_arista(origen, w)))
+    arbol = Grafo(False, grafo.obtener_vertices())
+    while not q.esta_vacia():
+        v, w, peso = q.desencolar()
+        if w in visitados:
+            continue
+        arbol.agregar_arista(v, w, peso)
+        visitados.add(w)
+        for u in grafo.adyacentes(w):
+            q.encolar(w, u, grafo.peso_arista(w, u))
