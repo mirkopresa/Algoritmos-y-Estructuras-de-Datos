@@ -1,8 +1,8 @@
 package cola_prioridad_test
 
 import (
-	"strings"
-	TDAHeap "tdas/heap"
+	"cmp"
+	TDAHeap "tdas/cola_prioridad"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,29 +10,15 @@ import (
 
 const _VOLUMEN = 100000
 
-// Funciones de comparacion para los tests
-func cmpInt(a, b int) int {
-	return a - b
-}
-
-func cmpFloat(a, b float64) int {
-	if a < b {
-		return -1
-	} else if a > b {
-		return 1
-	}
-	return 0
-}
-
 func TestHeapVacio(t *testing.T) {
-	heap := TDAHeap.CrearHeap[int](cmpInt)
+	heap := TDAHeap.CrearHeap[int](cmp.Compare)
 	require.True(t, heap.EstaVacia(), "El heap deberia estar vacio")
 	require.Panics(t, func() { heap.VerMax() }, "El heap esta vacio por ende deberia retornar Panic")
 	require.Panics(t, func() { heap.Desencolar() }, "El heap esta vacio por ende deberia retornar Panic")
 }
 
 func TestCantidad(t *testing.T) {
-	heap := TDAHeap.CrearHeap[string](strings.Compare)
+	heap := TDAHeap.CrearHeap[string](cmp.Compare)
 	require.Equal(t, 0, heap.Cantidad(), "La cantidad deberia ser 0")
 	heap.Encolar("Hola")
 	require.Equal(t, 1, heap.Cantidad(), "La cantidad deberia ser 1")
@@ -45,7 +31,7 @@ func TestCantidad(t *testing.T) {
 }
 
 func TestVerMax(t *testing.T) {
-	heap := TDAHeap.CrearHeap[string](strings.Compare)
+	heap := TDAHeap.CrearHeap[string](cmp.Compare)
 	heap.Encolar("Hola")
 	require.Equal(t, "Hola", heap.VerMax(), "Deberia retornar 'Hola'")
 	heap.Encolar("Mundo")
@@ -55,7 +41,7 @@ func TestVerMax(t *testing.T) {
 }
 
 func TestEncolarMaximos(t *testing.T) {
-	heap := TDAHeap.CrearHeap[int](cmpInt)
+	heap := TDAHeap.CrearHeap[int](cmp.Compare)
 	heap.Encolar(5)
 	require.Equal(t, 5, heap.VerMax(), "Deberia retornar 5")
 	heap.Encolar(10)
@@ -67,7 +53,7 @@ func TestEncolarMaximos(t *testing.T) {
 }
 
 func TestDesencolar(t *testing.T) {
-	heap := TDAHeap.CrearHeap[int](cmpInt)
+	heap := TDAHeap.CrearHeap[int](cmp.Compare)
 	for i := 1; i <= 10; i++ {
 		heap.Encolar(i)
 	}
@@ -77,7 +63,7 @@ func TestDesencolar(t *testing.T) {
 }
 
 func TestEncolarDesencolar(t *testing.T) {
-	heap := TDAHeap.CrearHeap[float64](cmpFloat)
+	heap := TDAHeap.CrearHeap[float64](cmp.Compare)
 	heap.Encolar(4.5)
 	heap.Encolar(40.2)
 	heap.Encolar(30.1)
@@ -86,9 +72,31 @@ func TestEncolarDesencolar(t *testing.T) {
 	require.Equal(t, 4.5, heap.Desencolar(), "Deberia retornar 4.5")
 }
 
+func TestFuncionamientoHeapArrVacio(t *testing.T) {
+	elementos := []int{}
+	heap := TDAHeap.CrearHeapArr(elementos, cmp.Compare)
+	require.True(t, heap.EstaVacia(), "El heap deberia estar vacio")
+	heap.Encolar(5)
+	require.Equal(t, 5, heap.VerMax(), "Deberia retornar 5")
+	heap.Encolar(3)
+	require.Equal(t, 2, heap.Cantidad(), "Deberia retornar 2")
+	heap.Encolar(8)
+	require.Equal(t, 8, heap.VerMax(), "Deberia retornar 8")
+	heap.Encolar(1)
+	require.Equal(t, 8, heap.VerMax(), "Deberia retornar 8")
+	require.Equal(t, 4, heap.Cantidad(), "Deberia retornar 4")
+	heap.Desencolar()
+	heap.Desencolar()
+	require.Equal(t, 2, heap.Cantidad(), "Deberia retornar 2")
+	require.Equal(t, 3, heap.VerMax(), "Deberia retornar 3")
+	heap.Desencolar()
+	heap.Desencolar()
+	require.True(t, heap.EstaVacia(), "El heap deberia estar vacio")
+}
+
 func TestHeapify(t *testing.T) {
 	elementos := []int{5, 3, 8, 1, 2}
-	heap := TDAHeap.CrearHeapArr(elementos, cmpInt)
+	heap := TDAHeap.CrearHeapArr(elementos, cmp.Compare)
 	require.Equal(t, 8, heap.VerMax(), "El maximo deberia ser 8")
 	heap.Desencolar()
 	require.Equal(t, 5, heap.VerMax(), "El maximo deberia ser 5")
@@ -102,15 +110,15 @@ func TestHeapify(t *testing.T) {
 
 func TestHeapSort(t *testing.T) {
 	elementos := []int{5, 3, 8, 1, 2}
-	TDAHeap.HeapSort(elementos, cmpInt)
+	TDAHeap.HeapSort(elementos, cmp.Compare)
 	require.Equal(t, []int{1, 2, 3, 5, 8}, elementos, "El arreglo deberia estar ordenado")
 	elementosFloat := []float64{4.5, 40.2, 30.1, 2.3, 3.4, 420.14}
-	TDAHeap.HeapSort(elementosFloat, cmpFloat)
+	TDAHeap.HeapSort(elementosFloat, cmp.Compare[float64])
 	require.Equal(t, []float64{2.3, 3.4, 4.5, 30.1, 40.2, 420.14}, elementosFloat, "El arreglo deberia estar ordenado")
 }
 
 func TestHeapComportamientoAlVaciarHeap(t *testing.T) {
-	heap := TDAHeap.CrearHeap[string](strings.Compare)
+	heap := TDAHeap.CrearHeap[string](cmp.Compare)
 	heap.Encolar("4")
 	heap.Encolar("Algoritmos")
 	heap.Encolar("y")
@@ -128,7 +136,7 @@ func TestHeapComportamientoAlVaciarHeap(t *testing.T) {
 }
 
 func TestHeapVolumen(t *testing.T) {
-	heap := TDAHeap.CrearHeap[int](cmpInt)
+	heap := TDAHeap.CrearHeap[int](cmp.Compare)
 	for i := 0; i < _VOLUMEN; i++ {
 		heap.Encolar(i)
 	}
