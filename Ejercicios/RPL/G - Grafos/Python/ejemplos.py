@@ -53,4 +53,10 @@ def mst_prim(grafo, origen):
         arbol.agregar_arista(v, w, peso)
         visitados.add(w)
         for u in grafo.adyacentes(w):
-            q.encolar(w, u, grafo.peso_arista(w, u))
+            if u not in visitados:
+                q.encolar(w, u, grafo.peso_arista(w, u))
+    return arbol
+
+def mst_kruskal(grafo, origen):
+    aristas = grafo.ob
+

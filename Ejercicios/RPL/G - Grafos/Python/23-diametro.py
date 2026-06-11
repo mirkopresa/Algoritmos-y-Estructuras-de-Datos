@@ -28,5 +28,4 @@ def bfs(grafo, origen) -> int:
                 q.append(w)
                 if orden[w] > orden_max:
                     orden_max = orden[w]
-        
     return orden_max

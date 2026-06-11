@@ -39,3 +39,5 @@ func (ab *ab[T]) esAVL(minimo, maximo *T) (int, bool) {
 	}
 	return alturaActual, avlIzq && avlDer
 }
+
+// ejercicio feo
