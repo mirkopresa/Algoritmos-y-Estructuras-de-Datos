@@ -8,8 +8,7 @@
 
 def amenazados(grafo):
     'Devolver una lista con los vértices que cumplen la condición'
-    grados_e = grados_entrada(grafo)
-    grados_s = grados_salida(grafo)
+    grados_s, grados_e = grados_salida_entrada(grafo)
     resultado = []
     especies = set()
     for v in grafo:
@@ -24,16 +23,15 @@ def amenazados(grafo):
                     especies.add(w)
     return resultado
 
-def grados_entrada(grafo):
-    grados = {}
-    for v in grafo: grados[v] = 0
+def grados_salida_entrada(grafo):
+    grados_e = {}
+    grados_s = {}
+    for v in grafo: 
+        grados_e[v] = 0
     for v in grafo:
-        for w in grafo.adyacentes(v):
-            grados[w] += 1
-    return grados
+        adyacentes = grafo.adyacentes(v)
+        grados_s[v] = len(adyacentes)
+        for w in adyacentes:
+            grados_e[w] += 1
+    return grados_s, grados_e
 
-def grados_salida(grafo):
-    grados = {}
-    for v in grafo:
-        grados[v] = len(grafo.adyacentes(v))
-    return grados
