@@ -27,12 +27,12 @@ func (ab *Arbol) _arbolEsPlantable() (int, bool) {
 	}
 	esMayor := true
 	if ab.izq != nil {
-		if ab.izq.dato > ab.dato {
+		if ab.izq.dato >= ab.dato {
 			esMayor = false
 		}
 	}
 	if ab.der != nil {
-		if ab.der.dato > ab.dato {
+		if ab.der.dato >= ab.dato {
 			esMayor = false
 		}
 	}

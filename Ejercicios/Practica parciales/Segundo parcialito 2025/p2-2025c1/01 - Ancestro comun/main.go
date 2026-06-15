@@ -20,6 +20,6 @@ func (ab *abb[K, V]) _ancestroComun(actual *nodoAbb[K, V], clave1, clave2 K) K {
 	} else if comparacion1 > 0 && comparacion2 > 0 {
 		return ab._ancestroComun(actual.der, clave1, clave2)
 	} else {
-		return actual.dato
+		return actual.clave
 	}
 }
