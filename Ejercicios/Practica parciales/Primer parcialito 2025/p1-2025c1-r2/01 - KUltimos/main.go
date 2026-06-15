@@ -6,38 +6,28 @@
 
 package main
 
+// O(n) siendo n los elementos de la cola, la vamos a terminar recorriendo siempre
 func (c colaEnlazada[T]) KUltimos(k int) []T {
-	resultado := make([]T, 0)
-	actual := c.primero
-	contador := 0
-	for actual != nil {
-		contador++
-		actual = actual.siguiente
+	rapido := c.primero
+	for i := 0; i < k && rapido != nil; i++ {
+		rapido = rapido.siguiente
 	}
-	if contador < k {
-		nodo := c.primero
-		for nodo != nil {
-			resultado = append(resultado, nodo.dato)
-			nodo = nodo.siguiente
+	res := make([]T, 0)
+	lento := c.primero
+	if rapido != nil {
+		for rapido != nil {
+			lento = lento.siguiente
+			rapido = rapido.siguiente
+		}
+		for lento != nil {
+			res = append(res, lento.dato)
+			lento = lento.siguiente
 		}
 	} else {
-		nodo = c.primero
-		elementosAIgnorar := contador - k
-		for elementosAIgnorar > 0 {
-			nodo = nodo.siguiente
-			elementosAIgnorar--
-		}
-		for nodo != nil {
-			resultado = append(resultado, nodo.dato)
-			nodo = nodo.siguiente
+		for lento != nil {
+			res = append(res, lento.dato)
+			lento = lento.siguiente
 		}
 	}
-	return resultado
+	return res
 }
-
-// El algoritmo tiene una complejidad de O(n) siendo n los elementos de la cola, ya que primero estamos
-// contando todos los elementos en el primer for, luego, si hay menos que k, hacemos un for guardando
-// todos los elementos de la cola (n)
-// En el caso que no, el primer for nos skipea k-1 elementos y terminamos recorriendo el resto de la cola
-// lo cual termina siendo n de nuevo, ya que estamos recorriendo toda la cola de nuevo si o si
-// El resto de operaciones son constantes
