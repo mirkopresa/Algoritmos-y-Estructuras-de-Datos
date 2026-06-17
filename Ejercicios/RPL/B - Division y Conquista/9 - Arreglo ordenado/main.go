@@ -4,20 +4,28 @@
 
 package main
 
+import "fmt"
+
 // A = 2, B = 2, C = 0; log en base 2 de 2 = 1 > C, O(n^(log base 2 de 2)) -> O(n)
 func EstaOrdenadoRecursivo(arr []int, inicio int, fin int) bool {
 	if inicio >= fin {
 		return true
 	}
 	mitad := (inicio + fin) / 2
-	mitad_izq := EstaOrdenadoRecursivo(arr, inicio, mitad)
-	mitad_der := EstaOrdenadoRecursivo(arr, mitad+1, fin)
-	if arr[mitad] <= arr[mitad+1] && mitad_izq && mitad_der {
-		return true
+	mitadIzq := EstaOrdenadoRecursivo(arr, inicio, mitad)
+	mitadDer := EstaOrdenadoRecursivo(arr, mitad+1, fin)
+	if arr[mitad] > arr[mitad+1] {
+		return false
+	} else {
+		return mitadIzq && mitadDer
 	}
-	return false
 }
 
 func EstaOrdenado(arr []int) bool {
 	return EstaOrdenadoRecursivo(arr, 0, len(arr)-1)
+}
+
+func main() {
+	arr := []int{3, 4}
+	fmt.Println(EstaOrdenado(arr))
 }
