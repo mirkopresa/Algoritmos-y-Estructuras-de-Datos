@@ -54,12 +54,6 @@ const (
 	CATAR
 )
 
-const (
-	_EDAD_MAXIMA_NIÑO        int = 12
-	_EDAD_MAXIMA_NO_NIÑO     int = 100
-	_CANTIDAD_NACIONALIDADES int = 32
-)
-
 type Persona struct {
 	edad         int
 	nombre       string
@@ -107,10 +101,10 @@ func OrdenarFila(personas []Persona) []Persona {
 			adultos = append(adultos, p)
 		}
 	}
-	adultos = CountingSort(adultos, 88, extraerEdad)
+	adultos = CountingSort(adultos, 87, extraerEdad)
 	adultos = CountingSort(adultos, 32, extraerNacionalidad)
 	ninos = CountingSort(ninos, 13, extraerEdad)
-	res := make([]Persona, len(personas))
+	res := make([]Persona, 0)
 	res = append(res, ninos...)
 	res = append(res, adultos...)
 	return res
