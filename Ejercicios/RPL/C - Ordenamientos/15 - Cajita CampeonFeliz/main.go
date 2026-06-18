@@ -66,10 +66,18 @@ type Persona struct {
 	nacionalidad Nacionalidad
 }
 
+func extraerEdad(p Persona) int {
+	return p.edad
+}
+
+func extraerNacionalidad(p Persona) int {
+	return int(p.nacionalidad)
+}
+
 // Primero ordenamos por no niños, y luego por nacionalidad, por ultimo por niños
 // Complejidad O(d * (n)) siendo d la cantidad de ordenamientos, n la cantidad de personas
 // Ordenamos 3 veces, entonces la complejidad es O(n)
-func CountingSort[T any](arr []T, rango int, f func(T) int) []T {
+func CountingSort(arr []Persona, rango int, f func(Persona) int) []Persona {
 	frecuencias := make([]int, rango)
 	for _, num := range arr {
 		frecuencias[f(num)]++
@@ -80,7 +88,7 @@ func CountingSort[T any](arr []T, rango int, f func(T) int) []T {
 		sumasAcumuladas[j] = sumasAcumuladas[j-1] + frecuencias[j-1]
 	}
 
-	arrResultado := make([]T, len(arr))
+	arrResultado := make([]Persona, len(arr))
 	for _, num := range arr {
 		posicion := sumasAcumuladas[f(num)]
 		arrResultado[posicion] = num
@@ -90,31 +98,22 @@ func CountingSort[T any](arr []T, rango int, f func(T) int) []T {
 }
 
 func OrdenarFila(personas []Persona) []Persona {
-	// Le enviamos _EDAD_MAXIMA_NO_NIÑO-_EDAD_MAXIMA_NIÑO+1 porque el rango de edades para los no niños es de 14 a _EDAD_MAXIMA_NIÑO,
-	// y el bucket reservado para los niños es el 0, ya que no nos importa su edad
-	personas = CountingSort(personas, _EDAD_MAXIMA_NO_NIÑO-_EDAD_MAXIMA_NIÑO+1, func(p Persona) int {
-		if p.edad <= 12 { // Si la edad es menor o igual a 12, guarda a todos en el bucket 0
-			return 0
+	ninos := make([]Persona, 0)
+	adultos := make([]Persona, 0)
+	for _, p := range personas {
+		if p.edad <= 12 {
+			ninos = append(ninos, p)
+		} else {
+			adultos = append(adultos, p)
 		}
-		return p.edad - 12 // Para los no niños, guarda en el bucket correspondiente a su edad menos 12
-	})
-	// Le enviamos _CANTIDAD_NACIONALIDADES+1 porque el bucket reservado para los niños es el 0,
-	// y luego tenemos un bucket para cada nacionalidad (32 buckets)
-	personas = CountingSort(personas, _CANTIDAD_NACIONALIDADES+1, func(p Persona) int {
-		if p.edad <= 12 { // Si es un niño, lo guardamos en el bucket 0, ya que no nos importa su nacionalidad
-			return 0
-		}
-		return int(p.nacionalidad) + 1 // Para los no niños, guardamos en el bucket correspondiente a su nacionalidad (el bucket 0 reservado para los niños)
-	})
-	// Le enviamos _EDAD_MAXIMA_NIÑO+2 porque el rango de edades para los niños es de 0 a _EDAD_MAXIMA_NIÑO, (13 buckets)
-	// y el bucket reservado para los no niños es el _EDAD_MAXIMA_NIÑO + 1,
-	personas = CountingSort(personas, _EDAD_MAXIMA_NIÑO+2, func(p Persona) int {
-		if p.edad <= 12 { // Si es un niño, lo guardamos en el bucket correspondiente a su edad
-			return p.edad
-		}
-		return _EDAD_MAXIMA_NIÑO + 1 // Para los no niños, lo guardamos en el bucket reservado para ellos, ya que no nos importa su edad
-	})
-	return personas
+	}
+	adultos = CountingSort(adultos, 88, extraerEdad)
+	adultos = CountingSort(adultos, 32, extraerNacionalidad)
+	ninos = CountingSort(ninos, 13, extraerEdad)
+	res := make([]Persona, len(personas))
+	res = append(res, ninos...)
+	res = append(res, adultos...)
+	return res
 }
 
 func main() {
