@@ -1,0 +1,11 @@
+Diseñar un TDA Diccionario en el que guardar, obtener, borrar y ver si pertenece sea O(1). Adicionalmente, que al
+iterarlo se pueda recorrer las claves en el orden en el que fueron guardadas (en caso de guardarse para actualizar el dato
+nada más, tener en cuenta la primera realización). Explicar cómo sería la estructura del TDA, así como sus primitivas
+(especialmente las de guardar y borrar), y cómo funcionaría el iterador externo de las estructura para poder iterar en el
+orden mencionado. Considerar todos los TDAs implementados durante la cursada, justamente implementados.
+
+Tendriamos un Diccionario como el que hicimos, pero en el que tenemos tambien en la estructura, una lista doblemente enlazada
+Esta lista guardara el orden de los elementos insertados, y en el diccionario se guardaran punteros a cada nodo, entonces para guardar,
+accedemos al indice, y en el caso de que sea un nuevo elemento, lo insertamos ultimo en la lista. Si no lo es, accedemos al elemento de la lista
+y le actualizamos el valor, sin cambiarle la posicion
+En el caso de borrar, lo que hariamos es encontrar el nodo, y como la lista es doblemente enlazada, conectamos el anterior con el siguiente
