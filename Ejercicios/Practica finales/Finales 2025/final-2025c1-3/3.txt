@@ -1,0 +1,7 @@
+Analizar y explicar qué características debe tener un algoritmo de División y Conquista para que su complejidad sea O(log n).
+
+Deberia ser un algoritmo en el que podamos decidir con que parte quedarnos al comparar, como una busqueda binaria
+El problema se puede dividir en la mayor cantidad de partes que querramos, es decir, podriamos dividirlo a la mitad, en 1/4, etc
+Pero deberia tener exclusivamente un llamado recursivo por cada iteracion, y no deberia tener ningun costo extra, todo constante
+Entonces nos queda T(n) = 1*T(N/B) + O(n⁰)
+Donde b es la proporcion en la que dividimos el problema, y log en base B de 1 nos daria siempre 0, por lo que 0 = C y nos queda O(n^c * log(n)) = O(log n)

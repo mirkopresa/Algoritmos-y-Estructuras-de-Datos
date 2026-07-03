@@ -1,0 +1,15 @@
+El grafo seria dirigido y no pesado, en el que los vertices son las paradas de los colectivos, y 
+las aristas que los unen las conexiones entre paradas. El grafo puede tener ciclos
+
+Al empezar, recorreria cada arreglo que me dan, y al estar parado en cada elemento, ejemplo 4 (con adyacente a 7), 
+agregaria el elemento actual como vertice (si no existe) y agregaria el adyacente como vertice tambien (si no existe), 
+y por ultimo agregaria el adyacente como arista, de 4 -> 7. Asi con cada elemento hasta terminar de recorrer todos los arreglos
+
+Entonces luego haria un BFS desde el inicio dado, y al desencolar de la cola, nos preguntamos si este mismo es el fin. 
+Si es asi, devolvemos el numero de orden que tiene ese vertice fin, siendo este la cantidad minima de paradas
+
+Complejidad: O(P + V + E)
+P siendo la suma total de todas las paradas de todas las lineas de colectivos
+V + E siendo el costo de hacer un recorrido BFS, en el que en el peor de los casos, todos los vertices (paradas) entran
+a la cola viendo todas sus aristas (las uniones entre paradas)
+El resto de operaciones son O(1) (en un final lo explicaria mas detallado)
