@@ -18,10 +18,10 @@ func (nodo *nodoAbb[K, V]) _Mayores(lista Lista[K], clave K, cmp funcCmp[K]) {
 	}
 	comparacion := cmp(clave, nodo.clave)
 	if comparacion < 0 {
-		nodo.izquierdo._Mayores(lista, clave)
-		lista.InsertarUltimo(nodo.dato)
-		nodo.derecho._Mayores(lista, clave)
+		nodo.izquierdo._Mayores(lista, clave, cmp)
+		lista.InsertarUltimo(nodo.clave)
+		nodo.derecho._Mayores(lista, clave, cmp)
 	} else {
-		nodo.derecho._Mayores(lista, clave)
+		nodo.derecho._Mayores(lista, clave, cmp)
 	}
 }
