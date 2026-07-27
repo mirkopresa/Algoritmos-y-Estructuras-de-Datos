@@ -1,0 +1,4 @@
+ir Vancouver, Boston, ruta1.kml
+viaje Boston, viaje_completo.kml
+itinerario recomendacion_ejemplo.csv
+reducir_caminos arbolito.pj
