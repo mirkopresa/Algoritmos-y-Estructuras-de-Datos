@@ -11,18 +11,18 @@
 
 package main
 
-func InvertirAgrupando[K comparable, V any](dicc Diccionario[K, V]) Diccionario[V, Lista[K]] {
+func InvertirAgrupando[K comparable, V comparable](dicc Diccionario[K, V]) Diccionario[V, Lista[K]] {
 	res := CrearHash[V, Lista[K]]()
 	for iter := dicc.Iterador(); iter.HayAlgoMas(); iter.Avanzar() {
 		clave, dato := iter.VerActual()
+		var lista Lista[K]
 		if !res.Pertenece(dato) {
-			lista := CrearListaEnlazada[K]()
-			lista.InsertarUltimo(clave)
+			lista = CrearListaEnlazada[K]()
 			res.Guardar(dato, lista)
 		} else {
-			lista := res.Obtener(dato)
-			lista.InsertarUltimo(clave)
+			lista = res.Obtener(dato)
 		}
+		lista.InsertarUltimo(clave)
 	}
 	return res
 }

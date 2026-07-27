@@ -43,12 +43,15 @@ func (hash *hashAbierto[K, V]) eliminarColisiones2(clave K) []K {
 	arrClave := convertirABytes(clave)
 	indiceActual := fnvHashing(arrClave, hash.tam)
 	lista := hash.tabla[indiceActual]
-	for iter := lista.Iterador(); iter.HayAlgoMas(); iter.Avanzar() {
-		elemento := iter.VerActual()
-		if elemento.clave != clave {
-			elemento.estado = BORRADO
-			eliminados = append(eliminados, elemento.clave)
+	iter := lista.Iterador()
+	for iter.HayAlgoMas() {
+		elemClave, _ := iter.VerActual()
+		if elemClave != clave {
+			iter.Borrar()
+			eliminados = append(eliminados, elemClave)
 			hash.cantidad--
+		} else {
+			iter.Avanzar()
 		}
 	}
 	// habria que redimensionar aca
