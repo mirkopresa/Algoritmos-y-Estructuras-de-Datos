@@ -7,81 +7,77 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	TDACEsp "tdas/cola_especialidad"
 	TDADict "tdas/diccionario"
 	"tp2/mensajes"
 	"unicode"
 )
 
-const (
-	PEDIRTURNO       = "PEDIR_TURNO"
-	ATENDERSIGUIENTE = "ATENDER_SIGUIENTE"
-	INFORME          = "INFORME"
-	URGENTE          = "URGENTE"
-	REGULAR          = "REGULAR"
-)
-
-type doctor struct {
-	especialidad   string
-	cant_pacientes int
+type Clinica interface {
+	PedirTurno(parametros []string) (string, int, string, error)
+	AtenderSiguiente(parametros []string) (string, int, string, error)
+	Informe(parametros []string) (int, string, error)
 }
 
-func CargarPacientes(ruta_csv_pacientes string) (TDADict.Diccionario[string, int], error) {
+type clinica struct {
+	pacientes      TDADict.Diccionario[string, int]
+	doctores       TDADict.DiccionarioOrdenado[string, Doctor]
+	especialidades TDADict.Diccionario[string, ColaEspecialidad]
+}
+
+func CrearClinica(ruta_csv_pacientes, ruta_csv_doctores string) (Clinica, error) {
 	dictPacientes := TDADict.CrearHash[string, int]()
-	err := procesarCSVPacientes(ruta_csv_pacientes, dictPacientes)
-	return dictPacientes, err
+	abbDoctores := TDADict.CrearABB[string, Doctor](strings.Compare)
+	dictEspecialidades := TDADict.CrearHash[string, ColaEspecialidad]()
+	clinica := &clinica{
+		pacientes:      dictPacientes,
+		doctores:       abbDoctores,
+		especialidades: dictEspecialidades,
+	}
+	errPacientes := clinica.procesarCSVPacientes(ruta_csv_pacientes)
+	if errPacientes != nil {
+		return nil, errPacientes
+	}
+	errDoctores := clinica.procesarCSVDoctores(ruta_csv_doctores)
+	if errDoctores != nil {
+		return nil, errDoctores
+	}
+	return clinica, nil
 }
 
-func CargarDoctores(ruta_csv_doctores string) (TDADict.DiccionarioOrdenado[string, *doctor], TDADict.Diccionario[string, TDACEsp.ColaEspecialidad], error) {
-	abbDoctores := TDADict.CrearABB[string, *doctor](strings.Compare)
-	dictEspecialidades := TDADict.CrearHash[string, TDACEsp.ColaEspecialidad]()
-	err := procesarCSVDoctores(ruta_csv_doctores, abbDoctores, dictEspecialidades)
-	return abbDoctores, dictEspecialidades, err
-}
-
-func VerificarFormato(linea string, pacientes TDADict.Diccionario[string, int], doctores TDADict.DiccionarioOrdenado[string, *doctor], especialidades TDADict.Diccionario[string, TDACEsp.ColaEspecialidad]) (string, []string, error) {
-	comandoPartes := strings.Split(linea, ":")
-	if len(comandoPartes) != 2 {
-		return "", nil, fmt.Errorf(mensajes.ENOENT_FORMATO, linea)
+func (clinica *clinica) PedirTurno(parametros []string) (string, int, string, error) {
+	err := clinica.verificarPedirTurno(parametros)
+	if err != nil {
+		return "", 0, "", err
 	}
-	comando := comandoPartes[0]
-	parametros := strings.Split(comandoPartes[1], ",")
-	switch comando {
-	case PEDIRTURNO:
-		return PEDIRTURNO, parametros, verificarPedirTurno(parametros, pacientes, especialidades)
-	case ATENDERSIGUIENTE:
-		return ATENDERSIGUIENTE, parametros, verificarAtenderSiguiente(parametros, doctores)
-	case INFORME:
-		return INFORME, parametros, verificarInforme(parametros)
-	default:
-		return "", nil, fmt.Errorf(mensajes.ENOENT_CMD, comando)
-	}
-}
-func PedirTurno(parametros []string, pacientes TDADict.Diccionario[string, int], especialidades TDADict.Diccionario[string, TDACEsp.ColaEspecialidad]) {
 	nombrePaciente := parametros[0]
 	nombreEspecialidad := parametros[1]
 	tipoUrgencia := parametros[2]
-	especialidad := especialidades.Obtener(nombreEspecialidad)
-	especialidad.Encolar(nombrePaciente, pacientes.Obtener(nombrePaciente), tipoUrgencia)
-	fmt.Printf(mensajes.PACIENTE_ENCOLADO, nombrePaciente)
-	fmt.Printf(mensajes.CANT_PACIENTES_ENCOLADOS, especialidad.Cantidad(), nombreEspecialidad)
+	especialidad := clinica.especialidades.Obtener(nombreEspecialidad)
+	especialidad.Encolar(nombrePaciente, clinica.pacientes.Obtener(nombrePaciente), tipoUrgencia)
+	return nombrePaciente, especialidad.Cantidad(), nombreEspecialidad, nil
 }
 
-func AtenderSiguiente(parametros []string, doctores TDADict.DiccionarioOrdenado[string, *doctor], especialidades TDADict.Diccionario[string, TDACEsp.ColaEspecialidad]) {
+func (clinica *clinica) AtenderSiguiente(parametros []string) (string, int, string, error) {
+	err := clinica.verificarAtenderSiguiente(parametros)
+	if err != nil {
+		return "", 0, "", err
+	}
 	nombreDoctor := parametros[0]
-	infoDoc := doctores.Obtener(nombreDoctor)
-	especialidad := especialidades.Obtener(infoDoc.especialidad)
+	infoDoc := clinica.doctores.Obtener(nombreDoctor)
+	especialidad := clinica.especialidades.Obtener(infoDoc.Especialidad())
 	if especialidad.EstaVacia() {
-		fmt.Print(mensajes.SIN_PACIENTES)
-		return
+		return "", 0, "", fmt.Errorf(mensajes.SIN_PACIENTES)
 	}
 	pacienteAtendido := especialidad.Desencolar()
-	infoDoc.cant_pacientes++
-	fmt.Printf(mensajes.PACIENTE_ATENDIDO, pacienteAtendido)
-	fmt.Printf(mensajes.CANT_PACIENTES_ENCOLADOS, especialidad.Cantidad(), infoDoc.especialidad)
+	infoDoc.AtenderPaciente()
+	return pacienteAtendido, especialidad.Cantidad(), infoDoc.Especialidad(), nil
 }
 
-func Informe(parametros []string, doctores TDADict.DiccionarioOrdenado[string, *doctor]) {
+func (clinica *clinica) Informe(parametros []string) (int, string, error) {
+	err := clinica.verificarInforme(parametros)
+	if err != nil {
+		return 0, "", err
+	}
 	informeDoctores := make([]string, 0)
 	contador := 0
 	inicio := parametros[0]
@@ -89,21 +85,21 @@ func Informe(parametros []string, doctores TDADict.DiccionarioOrdenado[string, *
 	if fin == "" {
 		fin = string(unicode.MaxRune)
 	}
-	doctoresIter := doctores.IteradorRango(&inicio, &fin)
+	doctoresIter := clinica.doctores.IteradorRango(&inicio, &fin)
 	for doctoresIter.HayAlgoMas() {
 		nombreDoctor, infoDoc := doctoresIter.VerActual()
 		contador++
-		cadenaDoc := fmt.Sprintf(mensajes.INFORME_DOCTOR, contador, nombreDoctor, infoDoc.especialidad, infoDoc.cant_pacientes)
+		cadenaDoc := fmt.Sprintf(mensajes.INFORME_DOCTOR, contador, nombreDoctor, infoDoc.Especialidad(), infoDoc.CantidadAtendidos())
 		informeDoctores = append(informeDoctores, cadenaDoc)
 		doctoresIter.Avanzar()
 	}
-	fmt.Printf(mensajes.DOCTORES_SISTEMA, contador)
-	fmt.Print(strings.Join(informeDoctores, ""))
+	informeFinal := strings.Join(informeDoctores, "")
+	return contador, informeFinal, nil
 }
 
 // Funciones auxiliares
 
-func procesarCSVPacientes(ruta_csv string, pacientes TDADict.Diccionario[string, int]) error {
+func (clinica *clinica) procesarCSVPacientes(ruta_csv string) error {
 	csv, err_apertura := os.Open(ruta_csv)
 	if err_apertura != nil {
 		return fmt.Errorf(mensajes.ENOENT_ARCHIVO, ruta_csv)
@@ -117,12 +113,12 @@ func procesarCSVPacientes(ruta_csv string, pacientes TDADict.Diccionario[string,
 		if err_lectura != nil {
 			return fmt.Errorf(mensajes.ENOENT_ANIO, datos[1])
 		}
-		pacientes.Guardar(datos[0], anio)
+		clinica.pacientes.Guardar(datos[0], anio)
 	}
 	return nil
 }
 
-func procesarCSVDoctores(ruta_csv string, doctores TDADict.DiccionarioOrdenado[string, *doctor], especialidades TDADict.Diccionario[string, TDACEsp.ColaEspecialidad]) error {
+func (clinica *clinica) procesarCSVDoctores(ruta_csv string) error {
 	csv, err_apertura := os.Open(ruta_csv)
 	if err_apertura != nil {
 		return fmt.Errorf(mensajes.ENOENT_ARCHIVO, ruta_csv)
@@ -134,27 +130,24 @@ func procesarCSVDoctores(ruta_csv string, doctores TDADict.DiccionarioOrdenado[s
 		datos := strings.Split(cadena, ",")
 		nombreDoctor := datos[0]
 		especialidad := datos[1]
-		doctores.Guardar(nombreDoctor, &doctor{especialidad: especialidad, cant_pacientes: 0})
-		if !especialidades.Pertenece(especialidad) {
-			especialidades.Guardar(especialidad, TDACEsp.CrearColaEspecialidad())
+		clinica.doctores.Guardar(nombreDoctor, &doctor{especialidad: especialidad, cant_pacientes: 0})
+		if !clinica.especialidades.Pertenece(especialidad) {
+			clinica.especialidades.Guardar(especialidad, CrearColaEspecialidad())
 		}
 	}
 	return nil
 }
 
-func verificarPedirTurno(parametros []string, pacientes TDADict.Diccionario[string, int], especialidades TDADict.Diccionario[string, TDACEsp.ColaEspecialidad]) error {
-	if len(parametros) != 3 {
-		return fmt.Errorf(mensajes.ENOENT_PARAMS, PEDIRTURNO)
-	}
+func (clinica *clinica) verificarPedirTurno(parametros []string) error {
 	errores := make([]string, 0)
 	nombrePaciente := parametros[0]
 	nombreEspecialidad := parametros[1]
 	tipoUrgencia := parametros[2]
-	if !pacientes.Pertenece(nombrePaciente) {
+	if !clinica.pacientes.Pertenece(nombrePaciente) {
 		cadenaError := fmt.Sprintf(mensajes.ENOENT_PACIENTE, nombrePaciente)
 		errores = append(errores, cadenaError)
 	}
-	if !especialidades.Pertenece(nombreEspecialidad) {
+	if !clinica.especialidades.Pertenece(nombreEspecialidad) {
 		cadenaError := fmt.Sprintf(mensajes.ENOENT_ESPECIALIDAD, nombreEspecialidad)
 		errores = append(errores, cadenaError)
 	}
@@ -170,30 +163,15 @@ func verificarPedirTurno(parametros []string, pacientes TDADict.Diccionario[stri
 	}
 }
 
-func verificarAtenderSiguiente(parametros []string, doctores TDADict.DiccionarioOrdenado[string, *doctor]) error {
-	if len(parametros) != 1 {
-		return fmt.Errorf(mensajes.ENOENT_PARAMS, ATENDERSIGUIENTE)
-	}
+func (clinica *clinica) verificarAtenderSiguiente(parametros []string) error {
 	doctor := parametros[0]
-	if !doctores.Pertenece(doctor) {
+	if !clinica.doctores.Pertenece(doctor) {
 		return fmt.Errorf(mensajes.ENOENT_DOCTOR, doctor)
 	}
 	return nil
 }
 
-func esString(cadena string) bool {
-	for _, letra := range cadena {
-		if !unicode.IsLetter(letra) && letra != ' ' {
-			return false
-		}
-	}
-	return true
-}
-
-func verificarInforme(parametros []string) error {
-	if len(parametros) != 2 {
-		return fmt.Errorf(mensajes.ENOENT_PARAMS, INFORME)
-	}
+func (clinica *clinica) verificarInforme(parametros []string) error {
 	inicio := parametros[0]
 	fin := parametros[1]
 	if inicio != "" && fin != "" && inicio > fin {
