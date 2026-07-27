@@ -7,6 +7,8 @@
 #     Para el grafo {A: [B, C], B: [A, C], C: [B,A]} el resultado podría ser, entre otros, [A,B,C] 
 #     ya que existe un camino que recorra A -> B -> C -> A
 
+from collections import deque
+
 
 def encontrar_ciclo(g) -> list | None:
     '''
@@ -18,30 +20,32 @@ def encontrar_ciclo(g) -> list | None:
     visitados = set()
     for v in g:
         if v not in visitados:
-            visitados.add(v)
-            padres[v] = None
-            ciclo = ciclo_dfs(g, v, padres, visitados)
+            ciclo = ciclo_bfs(g, v, padres, visitados)
             if ciclo is not None:
                 return ciclo
     return None
 
-def ciclo_dfs(grafo, v, padres, visitados):
-    for w in grafo.adyacentes(v):
-        if w in visitados:
-            if w != padres[v]:
-                return reconstruir_ciclo(padres, w, v)
-            else:
+def ciclo_bfs(grafo, origen, padres, visitados) -> list | None:
+    visitados.add(origen)
+    padres[origen] = None
+    q = deque()
+    q.append(origen)
+    while q:
+        v = q.popleft()
+        for w in grafo.adyacentes(v):
+            if w not in visitados:
                 padres[w] = v
-                ciclo = ciclo_dfs(grafo, w, padres, visitados)
-                if ciclo is not None:
-                    return ciclo
+                visitados.add(w)
+                q.append(w)
+            elif padres[w] != v:
+                return reconstruir_ciclo(padres, v, w)
     return None
 
-def reconstruir_ciclo(padres, inicio, fin):
-    v = fin
+def reconstruir_ciclo(padres, inicio, fin) -> list:
+    actual = fin
     camino = []
-    while v != inicio:
-        camino.append(v)
-        v = padres[v]
+    while actual is not inicio:
+        camino.append(actual)
+        actual = padres[actual]
     camino.append(inicio)
-    return camino[::-1]
+    return camino.reverse()

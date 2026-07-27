@@ -1,11 +1,9 @@
-
-
 def bfs(grafo, origen):
     visitados = set()
-    padres = {} # diccionario en python
+    padres = {}  # diccionario en python
     orden = {}
-    padres[origen] = None # None == nil
-    orden[origen] = 0 # orden.Guardar(origen, 0)
+    padres[origen] = None  # None == nil
+    orden[origen] = 0  # orden.Guardar(origen, 0)
     visitados.add(origen)
     q = Cola()  # usar deque de collections, NO QUEUE!!
     q.encolar(origen)
@@ -39,13 +37,14 @@ def dfs(grafo, origen):
     _dfs(grafo, origen, visitados, padres, orden)
     return padres, orden
 
+
 def mst_prim(grafo, origen):
     q = Heap()
     visitados = set()
     visitados.add(origen)
     for w in grafo.adyacentes(origen):
         q.encolar((origen, w, grafo.peso_arista(origen, w)))
-    arbol = Grafo(False, grafo.obtener_vertices())
+    arbol = Grafo(es_dirigido=False, vertices_init=grafo.obtener_vertices())
     while not q.esta_vacia():
         v, w, peso = q.desencolar()
         if w in visitados:
@@ -57,6 +56,6 @@ def mst_prim(grafo, origen):
                 q.encolar(w, u, grafo.peso_arista(w, u))
     return arbol
 
+
 def mst_kruskal(grafo, origen):
     aristas = grafo.ob
-

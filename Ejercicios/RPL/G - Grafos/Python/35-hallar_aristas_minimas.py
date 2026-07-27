@@ -1,8 +1,9 @@
-# Implementar un algoritmo que reciba un grafo no dirigido y determine la cantidad mínima de aristas que 
+# Implementar un algoritmo que reciba un grafo no dirigido y determine la cantidad mínima de aristas que
 # debería agregársele para que el grafo sea conexo.
 # Obviamente, si el grafo ya es conexo el algoritmo debe devolver 0. Indicar y justificar la complejidad del algoritmo implementado.
 
 from collections import deque
+
 
 def hallar_aristas_minimas(grafo):
     visitados = set()
@@ -14,6 +15,7 @@ def hallar_aristas_minimas(grafo):
             bfs(grafo, v, visitados)
             cantidad += 1
     return cantidad - 1
+
 
 def bfs(grafo, origen, visitados):
     visitados.add(origen)

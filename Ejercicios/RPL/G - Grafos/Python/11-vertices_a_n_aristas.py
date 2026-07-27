@@ -1,11 +1,12 @@
-# Implementar un algoritmo que reciba un grafo dirigido, un vértice V y un número N, y devuelva una lista 
-# con todos los vértices que se encuentren a exactamente N aristas de distancia del vértice V. 
+# Implementar un algoritmo que reciba un grafo dirigido, un vértice V y un número N, y devuelva una lista
+# con todos los vértices que se encuentren a exactamente N aristas de distancia del vértice V.
 # Indicar el tipo de recorrido utilizado y el orden del algoritmo. Justificar.
 
 from collections import deque
 
+
 def a_n_aristas(grafo, v, n) -> list | None:
-    'Devolver una lista con los vértices que cumplen la propiedad'
+    "Devolver una lista con los vértices que cumplen la propiedad"
     # Recorrido utilizado: BFS, complejidad O(V + E)
     # En el peor de los casos, la complejidad va a ser O(V + E) ya que si n es muy grande, podriamos llegar
     # a estar recorriendo casi todos o todos los vertices

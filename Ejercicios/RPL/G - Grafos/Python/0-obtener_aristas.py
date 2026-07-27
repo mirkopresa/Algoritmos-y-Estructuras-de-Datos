@@ -12,12 +12,13 @@ def obtener_aristas_dirigido(grafo):
             res.append((v, w))
     return res
 
+
 def obtener_aristas_no_dirigido(grafo):
     res = []
     visitados = set()
     for v in grafo:
         for w in grafo.adyacentes(v):
             if w not in visitados:
-                res.append((v,w))
+                res.append((v, w))
         visitados.add(v)
     return res

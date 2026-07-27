@@ -1,8 +1,9 @@
-# El diámetro de una red es el máximo de las distancias mínimas entre todos los vértices de la misma. 
-# Implementar un algoritmo que permita obtener el diámetro de una red, para el caso de un grafo no dirigido y no pesado. 
+# El diámetro de una red es el máximo de las distancias mínimas entre todos los vértices de la misma.
+# Implementar un algoritmo que permita obtener el diámetro de una red, para el caso de un grafo no dirigido y no pesado.
 # Indicar el orden del algoritmo propuesto.
 
 from collections import deque
+
 
 def diametro(grafo) -> int:
     diametro_maximo = 0
@@ -11,6 +12,7 @@ def diametro(grafo) -> int:
         if diametro > diametro_maximo:
             diametro_maximo = diametro
     return diametro_maximo
+
 
 def bfs(grafo, origen) -> int:
     visitados = set()

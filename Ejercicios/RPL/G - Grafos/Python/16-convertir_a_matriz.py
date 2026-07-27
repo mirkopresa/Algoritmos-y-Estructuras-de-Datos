@@ -1,10 +1,11 @@
-# Implementar una función que reciba un grafo no dirigido y pesado implementado con listas de adyacencia 
-# (diccionario de diccionarios) y devuelva una matriz que sea equivalente a la representación de matriz de adyacencia del mismo grafo. 
+# Implementar una función que reciba un grafo no dirigido y pesado implementado con listas de adyacencia
+# (diccionario de diccionarios) y devuelva una matriz que sea equivalente a la representación de matriz de adyacencia del mismo grafo.
 # Indicar y justificar el orden del algoritmo implementado.
 
+
 def convertir_a_matriz(grafo) -> tuple[list[list], list]:
-    'Devolver la Matriz construida'
-    'El arreglo de mapeo debe contener a todos los vértices, en el mismo orden en el que están representados en la matriz.'
+    "Devolver la Matriz construida"
+    "El arreglo de mapeo debe contener a todos los vértices, en el mismo orden en el que están representados en la matriz."
     arreglo_mapeo = grafo.obtener_vertices()
     largo_f_c = len(arreglo_mapeo)
     # Inicializamos la matriz con todos 0, VxV

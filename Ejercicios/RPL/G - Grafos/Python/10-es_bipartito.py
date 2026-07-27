@@ -1,7 +1,8 @@
-# Escribir una función bool es_bipartito(grafo) que dado un grafo no dirigido devuelva true o false de acuerdo a si es bipartito o no. 
+# Escribir una función bool es_bipartito(grafo) que dado un grafo no dirigido devuelva true o false de acuerdo a si es bipartito o no.
 # Indicar y justificar el orden del algoritmo. ¿Qué tipo de recorrido utiliza?
 
 from collections import deque
+
 
 def es_bipartito(grafo) -> bool:
     visitados = set()
@@ -14,6 +15,7 @@ def es_bipartito(grafo) -> bool:
             if not bipartito:
                 return False
     return True
+
 
 def bfs(grafo, v, orden, visitados) -> bool:
     q = deque()
@@ -29,5 +31,3 @@ def bfs(grafo, v, orden, visitados) -> bool:
                 orden[w] = orden[v] + 1
                 q.append(w)
     return True
-
-
